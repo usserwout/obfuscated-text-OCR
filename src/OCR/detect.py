@@ -52,13 +52,13 @@ class CharacterModel(MaskRCNN):
 def load_model(model_path):
     """Load trained model from checkpoint"""
     model = CharacterModel().to(DEVICE)
-    model.load_state_dict(torch.load(model_path, map_location=DEVICE))
+    model.load_state_dict(torch.load(model_path, map_location=DEVICE, weights_only=True))
     model.eval()
     return model
 
-def preprocess_image(image_path):
+def preprocess_image(img):
     """Process image to match training pipeline"""
-    img = Image.open(image_path).convert('L')  # Grayscale
+    #img = Image.open(image_path).convert('L')  # Grayscale
     original_width, original_height = img.size
     
     # Convert to tensor and normalize
@@ -74,13 +74,13 @@ def preprocess_image(image_path):
     
     return img_tensor, (original_width, original_height)
 
-def detect_characters(image_path, model):
+def detect_characters(image, model):
     """
     Main detection function
     Returns: List of dictionaries with 'character', 'box', and 'confidence'
     """
     # Preprocess image
-    img_tensor, original_size = preprocess_image(image_path)
+    img_tensor, original_size = preprocess_image(image)
     img_tensor = img_tensor.to(DEVICE)
     
     # Run inference
@@ -143,16 +143,18 @@ def draw_detections(image_path, detections):
 
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) != 3:
-        print("Usage: python detect.py <model_path> <image_path>")
+    if len(sys.argv) != 2:
+        print("Usage: python detect.py <image_path>")
         sys.exit(1)
     
-    model_path = sys.argv[1]
-    image_path = sys.argv[2]
+    model_path = "./character_detector.pth"
+    image_path = sys.argv[1]
+    
+    image = Image.open(image_path).convert('L')
     
     # Load model and detect
     model = load_model(model_path)
-    results = detect_characters(image_path, model)
+    results = detect_characters(image, model)
     
     # Print results
     print(f"Detected {len(results)} characters:")

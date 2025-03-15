@@ -3,6 +3,10 @@
 *.pth
 /__pycache__
 *.pyc
-/generated_images/generated
-generated_images/0.json
+/OCR/generated
+OCR/0.json
 !/example/*.png
+**/generated
+**/dataset
+**/__pycache__
+**/*.pyc

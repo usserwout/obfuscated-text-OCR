@@ -1,28 +1,23 @@
-from detect import detect_characters, load_model, draw_detections
 import glob
 from difflib import SequenceMatcher
-
+from main import get_coupon_code
+from PIL import Image
 
 def main():
-    model = load_model("./character_detector.pth")
+    
     score = 0
     not_detected =0
     semi_correct=0
     miss_classified = 0
 
-    image_files = glob.glob("../images/transformed/*.png")
+    image_files = glob.glob("../images/*.png")
     for image_file in image_files:
-        detections = detect_characters(image_file, model)
-        print(f"Detected {len(detections)} characters in {image_file}")
-        for i, detection in enumerate(detections, 1):
-            print(
-                f"{i:2}. {detection['character']} "
-                f"(conf: {detection['confidence']:.2f}) "
-                f"at [{detection['box'][0]:3},{detection['box'][1]:3}] "
-                f"to [{detection['box'][2]:3},{detection['box'][3]:3}]"
-            )
-            
-        coupon_code = "".join([detection['character'] for detection in detections])
+        
+        image = Image.open(image_file).convert('RGB')
+        
+        coupon = get_coupon_code(image)
+        
+        coupon_code = str(coupon)
         
         real_coupon_code= image_file.split("/")[-1].split(".")[0]
         rcc = real_coupon_code.replace("-", "")
@@ -42,15 +37,16 @@ def main():
         matcher = SequenceMatcher(None, cc, rcc)
         score += matcher.ratio()
         
+        coupon.save(f"../images/annotated/{real_coupon_code}.png")
+        print(f"Annotated image saved as ../images/annotated/{real_coupon_code}.png")
         
-        
-        new_file_name =  image_file.replace(".png", f"_{coupon_code}.png").replace("../images/transformed", "./annotated")
-        draw_detections(image_file, detections).save(
-          new_file_name
-        )
-        print(
-            f"Annotated image saved as {new_file_name}"
-        )
+        # new_file_name =  image_file.replace(".png", f"_{coupon_code}.png").replace("../images/transformed", "./annotated")
+        # draw_detections(image_file, detections).save(
+        #   new_file_name
+        # )
+        # print(
+        #     f"Annotated image saved as {new_file_name}"
+        # )
     
     print(f"At least 1 character not detected: {not_detected}/{len(image_files)} ({not_detected/len(image_files)*100:.2f}%)")
     print(f"Detected and classified all correct: {semi_correct}/{len(image_files)} ({semi_correct/len(image_files)*100:.2f}%)")

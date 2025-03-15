@@ -11,7 +11,6 @@ from torchvision.models.detection.transform import GeneralizedRCNNTransform
 from tqdm import tqdm
 from PIL import ImageDraw
 from matplotlib import pyplot as plt
-import random
 import torchvision.transforms.functional as F
 from torchvision.models.detection.image_list import ImageList
 
@@ -19,7 +18,7 @@ from torchvision.models.detection.image_list import ImageList
 CHAR_SET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789-'
 NUM_CLASSES = len(CHAR_SET) + 1  # +1 for background class
 DEVICE = "cpu" #torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
-IMAGE_SIZE = (256, 50)  # Fixed size for model input
+IMAGE_SIZE = (256, 50) 
 
 # Custom Dataset
 class CharacterDataset(Dataset):
@@ -37,7 +36,7 @@ class CharacterDataset(Dataset):
         
         # Filter and sort valid image files
         self.image_files = [f for f in os.listdir(image_dir) 
-                          if f.endswith('_transformed.png') and f in self.metadata]#[:250]
+                          if f.endswith('.png') and f in self.metadata]#[:250]
         self.char_to_idx = {char: i+1 for i, char in enumerate(CHAR_SET)}  # 0 is background
 
     def __len__(self):
@@ -45,19 +44,16 @@ class CharacterDataset(Dataset):
 
     
     def __getitem__(self, idx):
-        # Load image (as before)
         img_name = self.image_files[idx]
         img_path = os.path.join(self.image_dir, img_name)
         img = Image.open(img_path).convert('L')
         img = torch.from_numpy(np.array(img)).float() / 255.0
         img = img.unsqueeze(0)  # [1, H, W]
 
-        # Load annotations
         annotations = self.metadata[img_name]['char_positions']
         boxes = []
         labels = []
         for ann in annotations:
-            # Original coordinates (x1, y1, x2, y2, char)
             x1, y1, x2, y2 = ann[1]
             char = ann[0]
             orig_w, orig_h = img.shape[2], img.shape[1]
@@ -118,7 +114,6 @@ class IdentityTransform(GeneralizedRCNNTransform):
         super().__init__(min_size=min_size, max_size=max_size, image_mean=image_mean, image_std=image_std, **kwargs)
     def __call__(self, images, targets=None):
         image_sizes = [img.shape[-2:] for img in images]
-        # Stack images; assumes all images are the same size
         image_tensor = torch.stack(images, dim=0)
         image_list = ImageList(image_tensor, image_sizes)
         return (image_list, targets)
@@ -129,16 +124,14 @@ class CharacterModel(MaskRCNN):
         backbone = resnet_fpn_backbone('resnet34', weights="DEFAULT")
         #backbone = resnet_fpn_backbone('resnet50', weights="DEFAULT")
 
-        # Freeze backbone layers (all of body) to speed up training
         for param in backbone.body.parameters():
             param.requires_grad = False
-        # Leave FPN layers trainable
+
         for param in backbone.fpn.parameters():
             param.requires_grad = True
 
         super().__init__(backbone, NUM_CLASSES)
         
-        # Modify first conv layer for grayscale input
         old_conv = self.backbone.body.conv1
         new_conv = torch.nn.Conv2d(
             1, old_conv.out_channels,
@@ -151,32 +144,27 @@ class CharacterModel(MaskRCNN):
             new_conv.weight[:] = torch.mean(old_conv.weight, dim=1, keepdim=True)
         self.backbone.body.conv1 = new_conv
 
-        # Use the identity transform (no augmentation or modification)
         self.transform = IdentityTransform(
             min_size=IMAGE_SIZE[1],
             max_size=IMAGE_SIZE[0],
-            image_mean=[0.5],  # changed from 0.9 to 0.5
-            image_std=[0.5]    # changed from 0.9 to 0.5
+            image_mean=[0.5], 
+            image_std=[0.5]   
         )
         
-# Training Function
 def train_model():
-    # Initialize dataset and dataloader
-    dataset = CharacterDataset('./generated', './generated/metadata_transformed.json')
+    dataset = CharacterDataset('./generated', './generated/metadata.json')
     
     if len(dataset) == 0:
         print("Warning: Dataset is empty. Check image directory and metadata file.")
         return
     
     dataloader = DataLoader(
-        dataset, batch_size=8, shuffle=True, 
+        dataset, batch_size=16, shuffle=True, 
         collate_fn=collate_fn, num_workers=4   
     )
 
-    # Initialize model
     model = CharacterModel().to(DEVICE)
     
-    # Load existing model if available
     model_path = 'character_detector.pth'
     if os.path.exists(model_path):
         model.load_state_dict(torch.load(model_path, map_location=DEVICE, weights_only=True))
@@ -220,48 +208,41 @@ def train_model():
         lr=0.005, momentum=0.9, weight_decay=0.0005
     )
     
-    # Initialize learning rate scheduler
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.1, patience=3, verbose=True)
     
     # Training loop
     model.train()
-    for epoch in range(20):  # Adjust number of epochs as needed
+    for epoch in range(20):  
         print(f'Starting epoch {epoch+1}...')
         epoch_loss = 0.0
         
         for batch_idx, (images, targets) in enumerate(tqdm(dataloader, desc=f'Epoch {epoch+1}')):
-            # Move data to device
+
             images = [img.to(DEVICE) for img in images]
             targets = [{k: v.to(DEVICE) for k, v in t.items()} for t in targets]
-            # Forward pass
             output = model(images, targets)
-            # When scripted, output is a tuple: (losses, detections)
             if isinstance(output, tuple):
                 loss_dict = output[0]
             else:
                 loss_dict = output
             losses = sum(loss for loss in loss_dict.values())
             
-            # Backward pass
             optimizer.zero_grad()
             losses.backward()
             optimizer.step()
             
             epoch_loss += losses.item()
             
-            # Print every 10 batches
             if batch_idx % 10 == 0:
                 tqdm.write(f'Epoch {epoch+1} | Batch {batch_idx} | Loss: {losses.item():.2f} | Avg: {epoch_loss / (batch_idx+1):.2f}')
         
         avg_epoch_loss = epoch_loss / len(dataloader)
         print(f'Epoch {epoch+1} | Average Loss: {avg_epoch_loss:.2f}')
         
-        # Step the scheduler
         scheduler.step(avg_epoch_loss)
         
         torch.save(model.state_dict(), 'character_detector.pth')
 
-    # Save trained model
     torch.save(model.state_dict(), 'character_detector.pth')
     print('Training complete. Model saved.')
 

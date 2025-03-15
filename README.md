@@ -21,10 +21,11 @@ This project is designed to detect and read distorted text from images, specific
 
 ## Project Structure
 
-- **generated_images/train.py**: Contains the training script for the Mask R-CNN model, including dataset loading, model initialization, and training loop.
-- **generated_images/detect.py**: Script for running inference with the trained model to detect characters in new images.
-- **generated_images/transformCoupons.js**: Script for transforming and resizing images, and adding annotations for detected characters.
-- **image_processing/stages/detectCharacters.js**: Script for detecting character borders and creating character images for training.
+- **src/OCR/train.py**: Contains the training script for the Mask R-CNN model, including dataset loading, model initialization, and training loop.
+- **src/OCR/detect.py**: Script for running inference with the trained model to detect characters in new images.
+- **src/OCR/OCR.py**: Contains the main OCR functionality, including reading coupon codes from images.
+- **src/OCR/generate_images.py**: Script for generating images with coupon codes for training and testing.
+- **src/generate_images/generateCoupon.py**: Contains the function to generate coupon images with text.
 
 ## Example Process
 
@@ -60,6 +61,3 @@ This project leverages several powerful libraries and frameworks, including:
 
 - **PyTorch**: For building and training the deep learning models.
 - **Torchvision**: For pre-trained models and image transformations.
-- **Jimp**: For image processing in JavaScript.
-- **Canvas**: For creating and manipulating images in JavaScript.
-

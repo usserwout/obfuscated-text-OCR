@@ -1,0 +1,122 @@
+[
+  {
+    "character": "5",
+    "box": [
+      6,
+      8,
+      23,
+      38
+    ],
+    "confidence": 0.9536
+  },
+  {
+    "character": "B",
+    "box": [
+      23,
+      8,
+      40,
+      37
+    ],
+    "confidence": 0.8866
+  },
+  {
+    "character": "N",
+    "box": [
+      40,
+      9,
+      58,
+      38
+    ],
+    "confidence": 0.9874
+  },
+  {
+    "character": "F",
+    "box": [
+      58,
+      8,
+      71,
+      37
+    ],
+    "confidence": 0.9305
+  },
+  {
+    "character": "T",
+    "box": [
+      88,
+      8,
+      103,
+      38
+    ],
+    "confidence": 0.9645
+  },
+  {
+    "character": "3",
+    "box": [
+      102,
+      8,
+      119,
+      37
+    ],
+    "confidence": 0.7664
+  },
+  {
+    "character": "N",
+    "box": [
+      119,
+      8,
+      137,
+      39
+    ],
+    "confidence": 0.6895
+  },
+  {
+    "character": "F",
+    "box": [
+      137,
+      9,
+      151,
+      38
+    ],
+    "confidence": 0.8518
+  },
+  {
+    "character": "A",
+    "box": [
+      174,
+      9,
+      192,
+      39
+    ],
+    "confidence": 0.9636
+  },
+  {
+    "character": "9",
+    "box": [
+      191,
+      9,
+      209,
+      39
+    ],
+    "confidence": 0.6686
+  },
+  {
+    "character": "H",
+    "box": [
+      208,
+      8,
+      225,
+      39
+    ],
+    "confidence": 0.945
+  },
+  {
+    "character": "W",
+    "box": [
+      227,
+      7,
+      250,
+      38
+    ],
+    "confidence": 0.8636
+  }
+]
