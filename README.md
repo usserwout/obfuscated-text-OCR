@@ -31,10 +31,11 @@ This project is designed to detect and read distorted text from images, specific
 
 Here is an example of the process an image goes through in this project:
 
-1. **Input Image**:
+**Input Image**:
+
    ![Input Image](example/input.png)
 
-2. **Text position detection**:
+1. **Text position detection**:
    ![text_detection](example/text_detection.png)
 
 2. **Denoising**:
@@ -45,6 +46,7 @@ Here is an example of the process an image goes through in this project:
 
 3. **Output Image**:
    ![Output Image](example/output.png)
+
 With following predictions
 ```
  1. 8 (conf: 0.72) at [9, 9] -> [22, 39]
