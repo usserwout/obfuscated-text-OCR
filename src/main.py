@@ -26,13 +26,13 @@ def get_coupon_code(image:Image) -> str:
 
 
 def main():
-    image_path = '../images/Jartex_Coupon_16.png'
+    image_path = './text_detection/generated/coupon122.png'
     image = Image.open(image_path).convert('RGB')
     coupon = get_coupon_code(image)
+    coupon.save('annotated.png')
+    coupon.print_detected_characters()
+    print(coupon)
     print(f"Detected coupon code: {coupon}")
-    
-   
-    
     
 if __name__ == "__main__":
     main()

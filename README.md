@@ -34,25 +34,31 @@ Here is an example of the process an image goes through in this project:
 1. **Input Image**:
    ![Input Image](example/input.png)
 
-2. **Preprocessing**:
-   ![Preprocessing](example/preprocessing.png)
+2. **Text position detection**:
+   ![text_detection](example/text_detection.png)
+
+2. **Denoising**:
+   - Generate a mask:
+     ![Preprocessing Mask](example/mask.png)
+   - Apply mask to image:
+     ![Denoised Image](example/denoised.png)
 
 3. **Output Image**:
    ![Output Image](example/output.png)
 With following predictions
 ```
- 1. 7 (conf: 0.96) at [18, 8] -> [31, 43]
- 2. B (conf: 0.94) at [32, 8] -> [47, 41]
- 3. 9 (conf: 0.90) at [48, 8] -> [64, 43]
- 4. S (conf: 0.98) at [64, 8] -> [81, 42]
- 5. T (conf: 0.95) at [90, 8] -> [104, 42]
- 6. B (conf: 0.90) at [104, 8] -> [120, 42]
- 7. 2 (conf: 0.99) at [121, 8] -> [137, 43]
- 8. G (conf: 0.91) at [137, 7] -> [154, 42]
- 9. 3 (conf: 0.72) at [163, 7] -> [180, 43]
-10. W (conf: 0.99) at [181, 9] -> [205, 43]
-11. W (conf: 1.00) at [206, 8] -> [231, 42]
-12. K (conf: 1.00) at [229, 7] -> [247, 42]
+ 1. 8 (conf: 0.72) at [9, 9] -> [22, 39]
+ 2. V (conf: 0.75) at [22, 9] -> [38, 39]
+ 3. 8 (conf: 0.85) at [38, 8] -> [55, 38]
+ 4. S (conf: 0.90) at [52, 8] -> [74, 38]
+ 5. Q (conf: 0.96) at [95, 9] -> [113, 42]
+ 6. V (conf: 0.84) at [112, 9] -> [129, 39]
+ 7. M (conf: 0.87) at [127, 8] -> [153, 38]
+ 8. X (conf: 0.94) at [153, 8] -> [171, 38]
+ 9. M (conf: 0.99) at [196, 8] -> [219, 38]
+10. S (conf: 0.77) at [219, 8] -> [236, 37]
+11. F (conf: 0.99) at [236, 8] -> [250, 37]
+12. W (conf: 0.99) at [249, 8] -> [273, 40]
 ```   
 
 ## Acknowledgements

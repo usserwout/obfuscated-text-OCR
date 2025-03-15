@@ -41,6 +41,9 @@ class TextSegmenter:
       
       # Apply mask to original image
       result = Image.new('RGB', (width, height))
+      mask.save("mask.png")
+      
+      
       result.paste(orig_image, (0, 0), mask)
       
       # Convert to grayscale
