@@ -79,7 +79,7 @@ def apply_straight_lines(image, start=(0,0), end=(0,0)):
     apply_line(image, start=(start[0],start[1]+y), end=(end[0],start[1]+y))
   return image
 
-def generate_coupon(text, font_path="burbankbigcondensed_bold.otf", template_path="template.png", text_color="white", border_color="#3A4460", border_width=10, opacity=None, obfuscate=True, text_placement=None, output_mask=False, change_colors_chance=0.8):
+def generate_coupon(text, font_path="burbankbigcondensed_bold.otf", template_path="template.png", text_color="white", border_color="#3A4460", border_width=10, opacity=None, obfuscate=True, text_placement=None, output_mask=None, change_colors_chance=0.8):
   current_dir = os.path.dirname(os.path.abspath(__file__))
   
   font_key = (font_path, 115)
@@ -202,7 +202,7 @@ def generate_coupon(text, font_path="burbankbigcondensed_bold.otf", template_pat
   
   metadata = {"char_positions": char_positions, "text": text}
   
-  if output_mask:
+  if output_mask == "foreground":
     mask = Image.new("L", template.size, 0)
     
     padding = max(30, border_width * 2)  # Extra padding for obfuscation lines

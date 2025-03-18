@@ -15,7 +15,8 @@ from torchvision.models.detection.image_list import ImageList
 # Configuration
 CHAR_SET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789-'
 NUM_CLASSES = len(CHAR_SET) + 1  # +1 for background class
-DEVICE = "cpu" #torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
+DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print('Using device:', DEVICE)
 IMAGE_SIZE = (256, 50) 
 
 # Custom Dataset
