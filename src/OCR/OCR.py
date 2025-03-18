@@ -19,8 +19,7 @@ class CouponCode:
         
         for char_info in self.characters:
             box = char_info['box']
-            # Draw rectangle with some padding
-            draw.rectangle(box, outline="red", width=2)
+            draw.rectangle(box, outline="red", width=1)
             
             #draw.text((box[0], box[3]+10), char_info['character'], fill="red")
         

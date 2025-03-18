@@ -79,25 +79,72 @@ def apply_straight_lines(image, start=(0,0), end=(0,0)):
     apply_line(image, start=(start[0],start[1]+y), end=(end[0],start[1]+y))
   return image
 
-def generate_coupon(text, font_path="burbankbigcondensed_bold.otf", template_path="template.png", text_color="white", border_color="#3A4460", border_width=10, opacity=None, obfuscate=True, text_placement=None, output_mask=False):
+def generate_coupon(text, font_path="burbankbigcondensed_bold.otf", template_path="template.png", text_color="white", border_color="#3A4460", border_width=10, opacity=None, obfuscate=True, text_placement=None, output_mask=False, change_colors_chance=0.8):
   current_dir = os.path.dirname(os.path.abspath(__file__))
   
-  # Use cached font or load it
   font_key = (font_path, 115)
   if font_key not in _font_cache:
     _font_cache[font_key] = ImageFont.truetype(os.path.join(current_dir, font_path), 115)
   font = _font_cache[font_key]
   
-  # Use cached template or load it
   template_key = template_path
   if template_key not in _template_cache:
     _template_cache[template_key] = Image.open(os.path.join(current_dir, template_path)).convert("RGBA")
   template = _template_cache[template_key].copy()  # Create a copy to avoid modifying the cached template
 
+  if random.random() < change_colors_chance:
+    # Allow random color transformations
+    data = template.getdata()
+    new_data = []
+    
+    # Choose a transformation type
+    transform_type = random.choice(['invert_green', 'swap_channels', 'adjust_hue', 
+                     'boost_red', 'grayscale', 'sepia', 'blue_shift',
+                     'increase_contrast', 'invert_all'])
+    
+    for item in data:
+      if len(item) == 4:  # RGBA
+        r, g, b, a = item
+        
+        if transform_type == 'invert_green':
+          g = 255 - g
+        elif transform_type == 'swap_channels':
+          r, b = b, r
+        elif transform_type == 'adjust_hue':
+          factor = random.uniform(0.8, 1.2)
+          r = min(255, int(r * factor))
+          g = min(255, int(g * factor))
+          b = min(255, int(b * factor))
+        elif transform_type == 'boost_red':
+          r = min(255, int(r * 1.2))
+        elif transform_type == 'grayscale':
+          avg = int((r + g + b) / 3)
+          r, g, b = avg, avg, avg
+        elif transform_type == 'sepia':
+          r = min(255, int(r * 0.393 + g * 0.769 + b * 0.189))
+          g = min(255, int(r * 0.349 + g * 0.686 + b * 0.168))
+          b = min(255, int(r * 0.272 + g * 0.534 + b * 0.131))
+        elif transform_type == 'blue_shift':
+          b = min(255, int(b * 1.25))
+          r = max(0, int(r * 0.85))
+        elif transform_type == 'increase_contrast':
+          factor = 1.2
+          r = min(255, max(0, int(128 + (r - 128) * factor)))
+          g = min(255, max(0, int(128 + (g - 128) * factor)))
+          b = min(255, max(0, int(128 + (b - 128) * factor)))
+        elif transform_type == 'invert_all':
+          r, g, b = 255 - r, 255 - g, 255 - b
+        
+        new_data.append((r, g, b, a))
+      else:
+        new_data.append(item)
+    
+    template.putdata(new_data)
+
+
   if opacity is None:
     opacity = random.uniform(0.75, 0.9)
 
-  # Create transparent layer for text
   text_layer = Image.new("RGBA", template.size, (255, 255, 255, 0))
   draw = ImageDraw.Draw(text_layer)
 

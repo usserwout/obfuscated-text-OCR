@@ -32,7 +32,7 @@ if __name__ == "__main__":
   for i in range(750):
     print(f"Generating coupon {i+1}...")
     x = int(random.gauss(550, 20))
-    y = int(random.gauss(447, 10))
+    y = int(random.gauss(447, 15))
     
     opacity = random.uniform(0.5, 1)
 
@@ -52,7 +52,7 @@ if __name__ == "__main__":
       bottom_right = (max(bottom_right[0], pos[2]), max(bottom_right[1], pos[3]))
     
     metadata[f'coupon{i}'] = {
-    #  'text': meta['text'],
+      'text': meta['text'],
     #  'char_positions': meta['char_positions'],
       'top_left': (round(top_left[0]) -1, round(top_left[1])-1),
       'bottom_right': (round(bottom_right[0]) +1, round(bottom_right[1])+1),

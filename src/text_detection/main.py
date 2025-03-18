@@ -15,7 +15,6 @@ def crop_text(image:Image) -> Image:
     
     cropped = image.crop(result)
     
-    print("Cropped text region saved as cropped.png")
     return cropped
 
 

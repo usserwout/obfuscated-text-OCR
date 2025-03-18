@@ -1,5 +1,6 @@
 import torch
 import torchvision
+
 from torchvision.models.detection import MaskRCNN
 from torchvision.models.detection.backbone_utils import resnet_fpn_backbone
 from torch.utils.data import Dataset, DataLoader
@@ -9,9 +10,6 @@ import numpy as np
 from PIL import Image
 from torchvision.models.detection.transform import GeneralizedRCNNTransform
 from tqdm import tqdm
-from PIL import ImageDraw
-from matplotlib import pyplot as plt
-import torchvision.transforms.functional as F
 from torchvision.models.detection.image_list import ImageList
 
 # Configuration
@@ -79,7 +77,7 @@ class CharacterDataset(Dataset):
         #     draw.rectangle(box, outline="red", width=1)
         # img_pil.save('./gen.png')
         
-        # Create dummy masks: one binary mask per box
+
         masks = []
         img_w, img_h = IMAGE_SIZE
         for box in boxes:
@@ -94,7 +92,7 @@ class CharacterDataset(Dataset):
         target = {
             'boxes': torch.as_tensor(boxes, dtype=torch.float32),
             'labels': torch.as_tensor(labels, dtype=torch.int64),
-            'masks': torch.as_tensor(np.array(masks), dtype=torch.uint8),  # New key!
+            'masks': torch.as_tensor(np.array(masks), dtype=torch.uint8), 
             'image_id': torch.tensor([idx]),
             'area': (torch.as_tensor(boxes)[:, 3] - torch.as_tensor(boxes)[:, 1]) * 
                     (torch.as_tensor(boxes)[:, 2] - torch.as_tensor(boxes)[:, 0]),
@@ -118,8 +116,8 @@ class IdentityTransform(GeneralizedRCNNTransform):
         image_list = ImageList(image_tensor, image_sizes)
         return (image_list, targets)
 
-# Mask R-CNN Model with ResNet-50 FPN backbone
 class CharacterModel(MaskRCNN):
+    
     def __init__(self):
         backbone = resnet_fpn_backbone('resnet34', weights="DEFAULT")
         #backbone = resnet_fpn_backbone('resnet50', weights="DEFAULT")
@@ -150,7 +148,8 @@ class CharacterModel(MaskRCNN):
             image_mean=[0.5], 
             image_std=[0.5]   
         )
-        
+
+
 def train_model():
     dataset = CharacterDataset('./generated', './generated/metadata.json')
     
@@ -235,7 +234,6 @@ def train_model():
             
             if batch_idx % 10 == 0:
                 tqdm.write(f'Epoch {epoch+1} | Batch {batch_idx} | Loss: {losses.item():.2f} | Avg: {epoch_loss / (batch_idx+1):.2f}')
-        
         avg_epoch_loss = epoch_loss / len(dataloader)
         print(f'Epoch {epoch+1} | Average Loss: {avg_epoch_loss:.2f}')
         

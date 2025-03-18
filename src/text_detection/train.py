@@ -38,11 +38,9 @@ class CouponDataset(Dataset):
        
         
 
-        # Calculate scaling factors
         sx = IMAGE_SIZE[1] / orig_width
         sy = IMAGE_SIZE[0] / orig_height
         
-        # Scale bounding box coordinates
         x1_scaled = x1 * sx
         y1_scaled = y1 * sy
         x2_scaled = x2 * sx
@@ -66,11 +64,11 @@ def create_model():
     return model
 
 def main():
-    # Load metadata
+
     with open('generated/metadata.json', 'r') as f:
         metadata = json.load(f)
     
-    image_dir = 'generated'  # Update this path
+    image_dir = 'generated' 
     transform = transforms.Compose([
         transforms.Resize(IMAGE_SIZE),
         transforms.ToTensor(),
@@ -88,11 +86,11 @@ def main():
     device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
     model = create_model().to(device)
     
-    # Load existing model weights if available
     if os.path.exists('text_detector.pth'):
         model.load_state_dict(torch.load('text_detector.pth', 
                                 map_location=device,
                                 weights_only=True))
+        print("Loaded existing model weights")
     
     criterion = nn.SmoothL1Loss()
     optimizer = optim.AdamW(model.parameters(), lr=0.0001, weight_decay=1e-4)
@@ -114,7 +112,6 @@ def main():
       
       train_loss /= len(train_loader.dataset)
       
-      # Validation
       model.eval()
       val_loss = 0.0
       with torch.no_grad():

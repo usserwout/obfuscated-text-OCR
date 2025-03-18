@@ -29,10 +29,10 @@ if __name__ == "__main__":
   
   
   
-  for i in range(100):
+  for i in range(500):
     print(f"Generating coupon {i+1}...")
-    x = int(random.gauss(550, 40))
-    y = int(random.gauss(447, 30))
+    x = int(random.gauss(550, 20))
+    y = int(random.gauss(447, 15))
     
     opacity = random.uniform(0.5, 1)
 

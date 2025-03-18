@@ -10,3 +10,4 @@ OCR/0.json
 **/dataset
 **/__pycache__
 **/*.pyc
+.idea

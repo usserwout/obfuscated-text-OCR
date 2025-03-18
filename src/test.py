@@ -31,7 +31,7 @@ def main():
             print("Detected and classified all correct")
         else:
             miss_classified += 1
-            print(f"Detected all characters but classified some wrong ({rcc} != {cc})")
+            print(f"Detected all characters but classified some wrong ((expected) {rcc} != {cc} (found))")
             
         
         matcher = SequenceMatcher(None, cc, rcc)
